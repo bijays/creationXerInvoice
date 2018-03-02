@@ -1,0 +1,91 @@
+<apex:page standardController="Account" extensions="SmartAccountCreateCtlr" 
+           sidebar="true" tabstyle="Account" id="pg">
+    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' />
+    <body>
+        <label>Find Account: </label>
+        <input type="text" id="accName" onkeydown="findAccount(this.value);"/>
+        <div class="x-panel-bwrap">
+            <div class="x-panel-body x-panel-body-noheader">
+        <table id="tbl">
+            <thead>
+                <tr >
+            		<td class="x-grid3-hd x-grid3-cell x-grid3-td-ACTION_COLUMN" 
+                		style="font-weight: bold; width: 85px;">
+                        <div title="Action" class="x-grid3-hd-inner x-grid3-hd-ACTION_COLUMN" style="">
+                            
+                        </div>
+                    </td>
+                	<td class="x-grid3-hd x-grid3-cell x-grid3-td-ACTION_COLUMN" 
+                		style="font-weight: bold; width: 85px;">
+                        <div title="Action" class="x-grid3-hd-inner x-grid3-hd-ACTION_COLUMN" style="">
+                            <a class="x-grid3-hd-btn" href="#"></a>Country Code
+                        </div>
+                    </td>
+                	<td class="x-grid3-hd x-grid3-cell x-grid3-td-ACTION_COLUMN" 
+                		style="font-weight: bold; width: 85px;">
+                        <div title="Action" class="x-grid3-hd-inner x-grid3-hd-ACTION_COLUMN" style="">
+                            <a class="x-grid3-hd-btn" href="#"></a>Company Id
+                        </div>
+                    </td>
+                	<td class="x-grid3-hd x-grid3-cell x-grid3-td-ACTION_COLUMN" 
+                		style="font-weight: bold; width: 85px;">
+                        <div title="Action" class="x-grid3-hd-inner x-grid3-hd-ACTION_COLUMN" style="">
+                            <a class="x-grid3-hd-btn" href="#"></a>Account Name
+                        </div>
+                    </td>
+                	<td class="x-grid3-hd x-grid3-cell x-grid3-td-ACTION_COLUMN" 
+                		style="font-weight: bold; width: 85px;">
+                        <div title="Action" class="x-grid3-hd-inner x-grid3-hd-ACTION_COLUMN" style="">
+                            <a class="x-grid3-hd-btn" href="#"></a>Incorporation Date
+                        </div>
+                    </td>
+                	<td class="x-grid3-hd x-grid3-cell x-grid3-td-ACTION_COLUMN" 
+                		style="font-weight: bold; width: 85px;">
+                        <div title="Action" class="x-grid3-hd-inner x-grid3-hd-ACTION_COLUMN" style="">
+                            <a class="x-grid3-hd-btn" href="#"></a>Official Status
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                                <tr><td colspan="5">&nbsp;</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    </body>
+    <script>
+    	$=jQuery.noConflict();
+        function findAccount(keyword) {
+            if(keyword.length < 4) return;
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.SmartAccountCreateCtlr.search}',
+                keyword, 
+                function handleResult(result, event) { 
+                    if (event.status) {
+                        
+                        if(result != null) {
+                             debugger;
+                    
+                            for(var idx= $("#tbl > tbody> tr").length; idx > 0;idx--){
+                            	$("#tbl > tbody> tr:eq("+ idx + ")").remove();
+                            
+                        	}
+                            for(var i=0;i<result.length;i++) {
+                                var row = '<tr><td><input type="radio" name="opt" value="'+
+                                    	result[i].companyId+'"></td><td>'+result[i].countryCode + 
+                                    '</td><td>'+result[i].companyId +
+                                    '</td><td>'+result[i].name +
+                                    '</td><td>'+result[i].incorporationDate +
+                                    '</td><td>'+result[i].officialStatus+'</td></tr>';
+                            	$('#tbl > tbody > tr:last').after(row);
+                            }
+                        }
+                       
+                    }
+                    
+                }
+            );
+        }
+    </script>
+</apex:page>

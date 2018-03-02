@@ -1,0 +1,301 @@
+<apex:page controller='XeroSetupController' showHeader="true" sidebar="false" standardStylesheets="false" id="xeroSetupPage" >
+	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <apex:slds />
+            
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        </head>
+        <body class="slds-scope">
+             <apex:form id="mainForm">
+
+             	<apex:actionFunction action="{!importRevenueCodes}" name="importRC" reRender="blankPanel" status="status" onComplete="showSuccessMessage();"/>
+             	<apex:actionFunction action="{!importXeroContacts}" name="importXC" reRender="blankPanel" status="status" onComplete="showSuccessMessage();"/>
+
+             	<apex:actionFunction action="{!importXeroInvoices}" name="importXI" reRender="blankPanel" status="status" onComplete="showSuccessMessage();"/>
+
+             	<apex:actionFunction action="{!importXeroInventories}" name="importXInvt" reRender="blankPanel" status="status" onComplete="showSuccessMessage();"/>
+
+		    	<apex:actionStatus startText="requesting..." id="status">
+		            <apex:facet name="start">
+
+		            <!--
+		                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+		                    &nbsp;
+		                </div>
+		                <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+		                    <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+		                        <img src="/img/loading.gif" style="float: left; margin: 8px;" />
+		                        <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+		                    </div>
+		                </div>-->
+		                	<div class="slds-spinner_container">
+		                		<div role="slert" class="slds-spinner--brand slds-spinner slds-spinner--large">
+							    	<span class="slds-assistive-text">Loading</span>
+							    	<div class="slds-spinner__dot-a"></div>
+							    	<div class="slds-spinner__dot-b"></div>
+							  	</div>
+		                	</div>
+
+						  
+		            </apex:facet>
+		        </apex:actionStatus>
+             	<div class="slds-page-header">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-has-flexi-truncate" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <div class="slds-media slds-no-space slds-grow">
+                                <div class="slds-media__figure">
+                                    <svg class="slds-icon slds-icon-standard-user .slds-icon--small" aria-hidden="true">
+                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#lead')}"></use>
+                                    </svg>
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title--caps slds-line-height--reset">Xero</p>
+                                    <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate"
+                                        title="this should match the Record Title">Setup</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Connection Success toast Message using LDS Starts-->
+                <div class="demo-only" style="height: 4rem;" id="toastId">
+					  <div class="slds-notify_container slds-is-relative">
+					    <div class="slds-notify slds-notify_toast slds-theme_success" role="alert">
+					      <span class="slds-assistive-text">success</span>
+					      <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+					        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+					          <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#success')}"/>
+					        </svg>
+					      </span>
+					      <div class="slds-notify__content">
+					        <h2 class="slds-text-heading_small ">You are connected to the Xero Accounts mentioned below.</h2>
+					      </div>
+					      <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" id="closeButton"
+					      onclick="hideToast();return false;">
+					        <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+					          <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"/>
+					        </svg>
+					        <span class="slds-assistive-text">Close</span>
+					      </button>
+					    </div>
+					  </div>
+				</div>
+				<!-- Connection Success toast Message using LDS ends -->
+
+				<!-- Organisation Details Starts-->
+                <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--large">
+                    <h3 class="slds-text-heading--small slds-m-bottom--medium">Xero Accounts:</h3>
+                </div>
+                <div class="slds-card__body">
+                	<table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-row-hover" width="100%" id="invLineItemTable">
+
+                		<thead>
+							<tr>
+								<th class="slds-text-heading--label slds-size--1-of-3"
+								scope="col">Org Name</th>
+							</tr>
+						</thead>
+						<tbody>
+							<apex:repeat value="{!xeroOrganisationNames}" var="orgName" id="repeatId">
+								<tr class="slds-hint-parent" id="SIROW">
+									<td class="slds-size--1-of-9">
+										{!orgName}
+									</td>
+								</tr>
+							</apex:repeat>
+							
+						</tbody>
+						
+                	</table>
+                	<br/>
+                	<apex:commandButton id='connectId' value="Connect" onclick="connect();return false;" styleClass="slds-button slds-button_brand" />
+					<apex:commandButton id='disId' value="Disconnect" onclick="disconnect();return false;" styleClass="slds-button slds-button_neutral" /> 
+                </div>
+
+                <!-- Organisation Details `ends-->
+
+
+                <apex:outputPanel id="blankPanel"></apex:outputPanel>
+                <div class="slds-grid slds-wrap">
+                	<div class="slds-p-horizontal--small slds-size--1-of-4">
+                	</div>
+	                <!-- Import Revenue Codes Starts-->
+	                <div class="slds-p-horizontal--small slds-size--1-of-4">
+		                <div class="slds-card__body" id="revenueCodeImport">
+		                	<div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--large">
+		                    	<h3 class="slds-text-heading--small slds-m-bottom--medium">Revenue Codes from XERO</h3>
+		                	</div>
+		                	<apex:commandButton value="Update Revenue Codes"  onclick="importRevenueCodes();return false;" styleClass="slds-button slds-button_brand"  style="margin-left:10px"/>
+		                </div>
+		            </div>
+	                <!-- Import Revenue Codes Ends-->
+	                <div class="slds-p-horizontal--small slds-size--1-of-4">
+		                <!-- Import Xero Contact Codes Starts-->
+		                <div class="slds-card__body" id="xeroContactImport">
+		                	<div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--large">
+		                    	<h3 class="slds-text-heading--small slds-m-bottom--medium">Contacts from XERO</h3>
+		                	</div>
+		                	<apex:commandButton value="Update Xero Contacts"  onclick="importXeroContactsJS();return false;" styleClass="slds-button slds-button_brand"  style="margin-left:10px"/>
+		                </div>
+		                <!-- Import Contact Codes Ends-->
+		            </div>
+		            <div class="slds-p-horizontal--small slds-size--1-of-4">
+		            	
+		           	</div>
+	            </div>
+
+	            <div class="slds-grid slds-wrap">
+	            	<div class="slds-p-horizontal--small slds-size--1-of-4">
+                	</div>
+	            	<div class="slds-p-horizontal--small slds-size--1-of-4">
+		            	<!-- Import Xero Invoices Codes Starts-->
+		                <div class="slds-card__body" id="xeroInvoiceImport">
+		                	<div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--large">
+		                    	<h3 class="slds-text-heading--small slds-m-bottom--medium">Invoices from XERO</h3>
+		                	</div>
+		                	<apex:commandButton value="Update Xero Invoices"  onclick="importXeroInvoicesJS();return false;" styleClass="slds-button slds-button_brand"  style="margin-left:10px"/>
+		                </div>
+		                <!-- Import Xero Invoices code Ends-->
+		           	</div>
+
+		           	<div class="slds-p-horizontal--small slds-size--1-of-4">
+		           		<!-- Import Xero Invoices Codes Starts-->
+		                <div class="slds-card__body" id="xeroInventoryImport">
+		                	<div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--large">
+		                    	<h3 class="slds-text-heading--small slds-m-bottom--medium">Inventories from XERO</h3>
+		                	</div>
+		                	<apex:commandButton value="Update Xero Inventories"  onclick="importXeroInventoriesJS();return false;" styleClass="slds-button slds-button_brand"  style="margin-left:10px"/>
+		                </div>
+		                <!-- Import Xero Invoices code Ends-->
+                	</div>
+
+                	<div class="slds-p-horizontal--small slds-size--1-of-4">
+                	</div>
+	            </div>
+
+                <!-- Revenue Import Success toast Message using LDS Starts-->
+                <div class="demo-only" style="height: 4rem;" id="revenueSuccessMessage">
+					  <div class="slds-notify_container slds-is-relative">
+					    <div class="slds-notify slds-notify_toast slds-theme_success" role="alert">
+					      <span class="slds-assistive-text">success</span>
+					      <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+					        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+					        	<use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#success')}"/>
+					        </svg>
+					      </span>
+					      <div class="slds-notify__content">
+					        <h2 class="slds-text-heading_small ">Import Successful!</h2>
+					      </div>
+					      <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" id="closeButton" onclick="hideToast();return false;">
+					        <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+					          <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"/>
+					        </svg>
+					        <span class="slds-assistive-text">Close</span>
+					      </button>
+					    </div>
+					  </div>
+				</div>
+
+				<!-- Revenue Import Success toast Message using LDS ends -->
+            </apex:form>
+
+        </body>
+    </html>
+    <script type="text/javascript">
+
+    	jQuery.noConflict();
+
+    	window.onload = function()  {
+            //re-enable buttons here
+     	}
+		jQuery(document).ready(function() {
+			//jQuery("#massSuccessBlock").hide();
+			jQuery('[id$=disId]').attr('disabled', true);
+			jQuery("#toastId").hide();
+			jQuery("#revenueCodeImport").hide();
+			jQuery("#revenueSuccessMessage").hide();
+			jQuery("#xeroContactImport").hide();
+			jQuery("#xeroInvoiceImport").hide();
+			jQuery("#xeroInventoryImport").hide();
+		});
+		//window.stop();
+		function connect() {
+			jQuery('[id$=connectId]').attr('value', 'Connected');
+			jQuery('[id$=connectId]').removeClass('slds-button_brand');
+			jQuery('[id$=connectId]').addClass('slds-button_success');
+			jQuery('[id$=disId]').attr('disabled', false);
+			jQuery("#toastId").show();
+			jQuery("#revenueCodeImport").show();
+			jQuery("#xeroContactImport").show();
+			jQuery("#xeroInvoiceImport").show();
+			jQuery("#xeroInventoryImport").show();
+		}
+
+		function disconnect() {
+			jQuery('[id$=connectId]').attr('value', 'Connect');
+			jQuery('[id$=connectId]').addClass('slds-button_brand');
+			jQuery('[id$=connectId]').removeClass('slds-button_success');
+			jQuery('[id$=disId]').attr('disabled', true);
+			jQuery("#toastId").hide();
+			jQuery("#revenueSuccessMessage").hide();
+			jQuery("#revenueCodeImport").hide();
+			jQuery("#xeroContactImport").hide();
+			jQuery("#xeroInvoiceImport").hide();
+			jQuery("#xeroInventoryImport").hide();
+		}
+
+		function importRevenueCodes() {
+			jQuery("#revenueSuccessMessage").hide();
+			if(!confirm('Do you want to proceed ?')) {
+	            return false;
+	        } else {
+	            importRC();
+	        }
+	    	return false;
+		}
+
+		function importXeroContactsJS() {
+			jQuery("#revenueSuccessMessage").hide();
+			if(!confirm('Do you want to proceed ?')) {
+	            return false;
+	        } else {
+	            importXC();
+	            //alert('i am in XC');
+	        }
+	    	return false;
+		}
+		function importXeroInvoicesJS() {
+			jQuery("#revenueSuccessMessage").hide();
+			if(!confirm('Do you want to proceed ?')) {
+	            return false;
+	        } else {
+	            importXI();
+	            //alert('i am in XC');
+	        }
+	    	return false;
+		}
+
+		function importXeroInventoriesJS() {
+			jQuery("#revenueSuccessMessage").hide();
+			if(!confirm('Do you want to proceed ?')) {
+	            return false;
+	        } else {
+	            importXInvt();
+	            //alert('i am in XC');
+	        }
+	    	return false;
+		}
+
+		function showSuccessMessage() {
+			//alert('i am success');
+			jQuery("#revenueSuccessMessage").show();
+		}
+
+		function hideToast() {
+			jQuery("#toastId").hide();
+			jQuery("#revenueSuccessMessage").hide();
+		}
+		
+	</script>
+</apex:page>

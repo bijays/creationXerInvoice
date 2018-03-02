@@ -1,0 +1,488 @@
+<apex:page showHeader="false" sidebar="false" cache="false" standardStylesheets="false" doctype="html-5.0" controller="DuedilController">
+	<apex:styleSheet value="{!URLFOR($Resource.DueDilStatic,'css/partner-portal.css')}"/>
+    
+    <apex:pageMessages id="pageMessage"/>    
+    <style type="text/css">
+        .tableRowCSS {
+            text-align :left;
+            border-bottom:1pt solid black;
+            width: 16%;
+        }
+
+        .btn {
+            text-transform : none !important;
+        }
+
+        input[type="radio"] + label {
+                display: inline-block;
+                margin-right: 10px;
+            }
+            body {
+                font-size: 14px;
+            }
+            .form-control {
+                display: block;
+                width: 100%;
+                height: 34px;
+                padding: 6px 12px;
+                font-size: 14px;
+                line-height: 1.428571429;
+                color: #555555;
+                vertical-align: middle;
+                background-color: #ffffff;
+                background-image: none;
+                border: 1px solid #cccccc;
+                border-radius: 4px;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+                transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            }
+            textarea.form-control {
+                height: 100px;
+                min-height: 100px;
+            }
+            .form-control:required:valid, .form-control:required:invalid {
+                    border-color: #ccc;
+            }
+            input[type=text] + label, textarea + label {
+                height: 27px;
+                padding: 0px;
+                display: block;
+                margin-top: -27px;
+                pointer-events: none;
+                box-sizing: border-box;
+                line-height: 1.428571429;
+            }
+            textarea + label {
+                margin-top: -94px;
+                height: 100px;
+            }
+            input[type="text"] + label:before, textarea + label:before {
+                content: attr(pl);
+                margin: 0 calc(1em + 2px);
+                display: inline-block;
+                -webkit-transform-origin: left center;
+                transform-origin: left center;
+                color: #999999;
+                -webkit-transition-property: -webkit-transform, color;
+                -webkit-transition-property: color, -webkit-transform;
+                transition-property: color, -webkit-transform;
+                transition-property: transform, color;
+                transition-property: transform, color, -webkit-transform;
+                -webkit-transition-duration: 0.2s;
+                transition-duration: 0.2s;
+                -webkit-transition-delay: 0;
+                transition-delay: 0;
+                -webkit-transition-timing-function: ease-out;
+                transition-timing-function: ease-out;
+                -webkit-transform-origin: left center;
+                transform-origin: left center;
+                white-space: nowrap;
+                overflow-x: hidden;
+                max-width: 90%;
+            }
+            input[type='text']:focus + label:before, input[type='text']:active + label:before,
+            input[type='text']:valid + label:before, textarea:focus + label:before,
+            textarea:active + label:before, textarea:valid + label:before,
+            input[type='text'][readonly] + label:before {
+                background: white;
+                padding: 0 1.5px;
+                -webkit-transform: translateY(-17.5px) scale(.85, .85);
+                transform: translateY(-17.5px) scale(.85, .85);
+                color: teal;
+            }        
+            input[type='text'][readonly] {
+                color: #555;
+                background-color:#eee;
+            }
+            .has-error {
+                border-color: red !important;
+            }
+            .help-block.parsley-required {
+                color: red;
+            }
+            
+            .has-error .form-control {
+                border-color: red !important;
+            }
+            .help-block .parsley-required {
+                color: red !important;
+            }
+            .title {
+                color: #39f;
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+            hr {
+                border-color: #39f;
+            }
+            .hero2 > img {
+                min-height: 225%;
+            }
+            .modal {
+                z-index: 100001;
+            }
+            .modal-content {
+                border-radius: 6px;
+            }
+            .modal-header {
+                background-color: #39f;
+                color: #ffffff;
+            }
+            .modal-body {
+                max-height: 400px;
+                overflow: auto;
+            }
+            .modal-footer {
+                border-top: 1px solid #39f;
+            }
+            .lk + .lk :before {
+                content: " | ";
+            }
+            .wait {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                cursor: wait;
+                z-index: 100002;
+            }
+            main.body > div {
+                min-height: 688px;
+            }
+            .panel-default > .panel-heading {
+                color: #39f;
+                font-weight: 500;
+                background-color: #f5f5f5;
+                border-color: #dddddd;
+            }
+            .inner-panel {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+            .multiSelectPicklistTable {
+                width: 100%;
+            }
+            tr.multiSelectPicklistRow>td {
+                min-height: 100px;
+            }
+            tr.multiSelectPicklistRow>td>select {
+                min-height: 100px;
+                height: 100%;
+                width: 100% !important;
+                overflow-x: auto;
+            }
+            tr.multiSelectPicklistRow td:first-child {
+                width: calc((100%-63px)/2);
+            }
+            tr.multiSelectPicklistRow td:nth-child(2) {
+                padding:10px;
+                width: 63px;
+            }
+    </style>    
+    
+    <head>
+        <meta charset="utf-8"/>
+                <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+                <title>DuedilConnector</title>
+                <link rel="icon" href="img/favicon.ico" type="image/x-icon"/>
+                <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+                <meta name="description" content=""/>
+                <meta name="viewport" content="width=device-width initial-scale=1"/>
+                <script src="https://use.typekit.net/yln2mqq.js"></script>
+                <script>try{Typekit.load({ async: true });}catch(e){}</script>     
+    </head>
+    <apex:form id="mainForm">
+    	<apex:actionFunction action="{!findAccount}" name="searchAccount" reRender="accountDetails,pageMessage" status="status"/>
+
+    	 <body id="page" class="fluid light-theme data-seed-deeplink data-seed-modal" >
+    	 	<main id="mainPanel">
+    	 		<section class="promobar" style="position:relative;left:0;right:0;z-index:1000;">
+                    <div class="container text-center">
+                        <span class="promo-intro">
+                            <p></p>
+                        </span>
+                        
+                        <a onclick="void()" class="btn btn-md btn-white">Duedil Connector</a>
+                        
+                    </div>
+                </section>
+                <!--Main Div Container Starts-->
+                <div style="background-color: white;" class="container" >
+                	<!--Main Section Starts-->
+                	<section class="apply-step-form active" html-data-apply-step="1" id="accountSection">
+                		<div class="container">
+                			<apex:outputPanel >
+                                <apex:outputPanel id="accountDetails">
+                                    <div class="panel-group">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                
+                                                <!--Action Status Starts-->
+                                                <div class="row">
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-4">
+                                                    	<!--
+                                                        <apex:actionStatus id="status">
+											                <apex:facet name="start">
+											                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+											                        &nbsp;
+											                    </div>
+											                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+											                        <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+											                            <img src="/img/loading.gif" style="float: left; margin: 8px;" />
+											                            <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+											                        </div>
+											                    </div>
+											                </apex:facet>
+											            </apex:actionStatus>   --> 
+                                                    </div>
+                                                    <div class="col-md-4"></div>
+                                                </div>
+                                                <!--Action Status Ends-->
+                                                <!--Account Button Starts-->
+                                                <div class="row">
+                                                    <div class="col-md-4"></div>
+                                                        <div class="col-md-2">
+                                                            <input type="button" id="editDetails" class="btn btn-md btn-primary btn-block btn-form" value="Find Account" onclick="searchAccountFromDuedill();"/>                                                    
+                                                        </div>
+                                                    <div class="col-md-2"></div>
+                                                    <div class="col-md-4"></div>
+                                                </div>
+                                                <!--Account Button Ends-->
+                                                
+
+                                            </div>
+                                            <!--Search Section-->
+
+                                            <div class="panel panel-default inner-panel" style="margin-bottom:20px">
+                                            	<div class="panel-heading">
+		                                            <b>
+		                                                Search for Account
+		                                            </b>
+		                                        </div>
+		                                        <div class="panel-body">
+
+		                                        	<!--Row Search Account Starts-->
+		                                        	<div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountNameLabel">
+                                                                <label for="accountCompName">{!$ObjectType.Account.fields.Name.Label}<font>:</font>
+                                                                </label>
+                                                            </div>
+                                                        </div>                                                
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountCompName">
+                                                                <apex:inputText value="{!accountName}" id="accountCompName" styleclass="form-control" />
+                                                                <span style="display:none" id="profileLastNameRequired" class="help-block">
+				                                                    <span class="parsley-required">Country Name is required</span>
+				                                                </span>
+                                                                
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountContryCodeLabel">
+                                                                <label for="accountContryCode">{!$ObjectType.Account.fields.Country_Code__c.Label}<font>:</font></label>
+                                                            </div>
+                                                        </div>                                          
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountCountryCode">
+                                                                <apex:inputText value="{!countryCode}" id="accountContryCode" styleclass="form-control" />
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+		                                        </div>
+                                           	</div>
+                                           	<div class="panel-body">
+	                                           	<div class="row">
+	                                                <div class="col-md-4"></div>
+	                                                    <div class="col-md-2">
+	                                                        <input type="button" id="editDetails" class="btn btn-md btn-primary btn-block btn-form" value="Update Account" onclick="void();"/>                                                    
+	                                                    </div>
+	                                                <div class="col-md-2"></div>
+	                                                <div class="col-md-4"></div>
+	                                            </div>
+	                                        </div>
+                                           	<!-- Account Section-->
+                                            <div class="panel panel-default inner-panel" style="margin-bottom:20px">
+
+		                                        <div class="panel-heading">
+		                                            <b>
+		                                                Account Section
+		                                            </b>
+		                                        </div>
+
+		                                        <div class="panel-body">
+
+		                                        	
+		                                        	<!--Row 1 Starts-->
+		                                        	<div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountNameLabel">
+                                                                <label for="accountName">{!$ObjectType.Account.fields.Name.Label}<font>:</font>
+                                                                </label>
+                                                            </div>
+                                                        </div>                                                
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountName">
+                                                                <apex:outputText value="{!accountInfo.Name}" id="accountName" styleclass="form-control"/>
+                                                                
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountSIC2003Label">
+                                                                <label for="accountSIC2003Label">{!$ObjectType.Account.fields.SIC_2003__c.Label}<font>:</font></label>
+                                                            </div>
+                                                        </div>                                          
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountSIC2003">
+                                                                <apex:outputText value="{!accountInfo.SIC_2003__c}" id="accountSIC2003Label" styleclass="form-control" />
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--Row 1 ends-->
+
+                                                    <!-- Row 2 Starta-->
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountCompanyNumber">
+                                                                <label for="accountCompNumber">{!$ObjectType.Account.fields.Company_Number__c.Label}<font>:</font>
+                                                                </label>
+                                                            </div>
+                                                        </div>                                                
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountCompNumber">
+                                                                <apex:inputText value="{!accountInfo.Company_Number__c}" id="accountComNumber" styleclass="form-control"/>
+                                                                
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountSIC2007Label">
+                                                                <label for="accountSIC2007">{!$ObjectType.Account.fields.SIC_2007__c.Label}<font>:</font></label>
+                                                            </div>
+                                                        </div>                                          
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountSIC2007Div">
+                                                                <apex:outputText value="{!accountInfo.SIC_2007__c}" id="accountSIC2007" styleclass="form-control" />
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Row 2 ends-->
+
+                                                    <!--Row 3 Starts-->
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountCompanyType">
+                                                                <label for="accountCompType">{!$ObjectType.Account.fields.Company_Type__c.Label}<font>:</font>
+                                                                </label>
+                                                            </div>
+                                                        </div>                                                
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountCompType">
+                                                                <apex:outputText value="{!accountInfo.Company_Type__c}" id="accountComType" styleclass="form-control"/>
+                                                                
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountWebsiteLabel">
+                                                                <label for="accountWebsite">{!$ObjectType.Account.fields.Website.Label}<font>:</font></label>
+                                                            </div>
+                                                        </div>                                          
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountWebsite">
+                                                                <apex:outputText value="{!accountInfo.Website}" id="accountWebsite" styleclass="form-control" />
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Row 3 Ends -->
+
+                                                     <!--Row 4 Starts-->
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountIncorpDateLabel">
+                                                                <label for="accountIncorpdate">{!$ObjectType.Account.fields.Incorporation_Date__c.Label}<font>:</font>
+                                                                </label>
+                                                            </div>
+                                                        </div>                                                
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountIncorpDate">
+                                                                <apex:outputText value="{!accountInfo.Incorporation_Date__c}" id="accountIncorpdate" styleclass="form-control"/>
+                                                                
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountRegAreaLabel">
+                                                                <label for="accountRegAdd">{!$ObjectType.Account.fields.Registered_Area__c.Label}<font>:</font></label>
+                                                            </div>
+                                                        </div>                                          
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountRegAdd">
+                                                                <apex:outputText value="{!accountInfo.Registered_Area__c}" id="accountRegAdd" styleclass="form-control" />
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Row 4 Ends -->
+
+                                                    <!--Row 5 Starts-->
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group" id="accountDescriptionLabel">
+                                                                <label for="accountDescription">{!$ObjectType.Account.fields.Description.Label}<font>:</font>
+                                                                </label>
+                                                            </div>
+                                                        </div>                                                
+                                                        <div class="col-md-5">
+                                                            <div class="form-group" id="accountDescription">
+                                                                <apex:outputText value="{!accountInfo.Description}" id="accountDescription" styleclass="form-control"/>
+                                                                
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-2">
+                                                            
+                                                        </div>                                          
+                                                        <div class="col-md-2">
+                                                           
+                                                        </div>
+                                                    </div>
+                                                    <!-- Row5  Ends -->
+		                                        </div>
+
+		                                    </div>
+
+                                        </div>
+                                    </div>
+                                    
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                		</div>
+                	</section>
+                	<!--Main Section Ends-->
+                </div>
+                <!--Main Div Container Ends-->
+    	 	</main>
+    	 </body>
+	</apex:form>
+
+	<script>
+		function searchAccountFromDuedill() {
+            alert('Calling duedil API')
+            searchAccount();    
+            return false;
+        }
+	</script>
+
+</apex:page>

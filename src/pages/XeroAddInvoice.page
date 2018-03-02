@@ -1,0 +1,368 @@
+<apex:page standardController="Xero_Invoices__c" extensions="XeroAddInvoiceExtension" showHeader="true" sidebar="false" standardStylesheets="true" id="invoicePage">
+    <style type="text/css">
+        .hr-style {
+            width: 500px !important;
+            margin-top: 10px !important;
+            margin-left: 900px !important;
+            background-color: black;
+        }
+        hr.doubleborder {
+            border-top: 3px double #8c8b8b;
+
+        }
+        .readOnly {
+            background: #CCC; 
+            color: #333; 
+            border: 1px solid #666 
+        }
+
+        
+    </style>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            <apex:slds />
+            
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        </head>
+        <body class="slds-scope">
+             <apex:form id="mainForm">
+                
+                
+                <apex:actionFunction name="saveXeroInvoice" action="{!saveInvoice}" reRender="amountId" >
+                    <apex:param name="subtotal" value=""/>
+                    <apex:param name="total" value=""/> 
+                </apex:actionFunction>
+                <!--<apex:actionFunction name="getAmount" action="{!getUpdatedAmount}" reRender="amountId" immediate="true">
+                    <apex:param name="rowIndex" value=""/>
+                    <apex:param name="quantity" value=""/>
+                    <apex:param name="salesprice" value=""/> 
+                </apex:actionFunction>-->
+
+                <apex:actionStatus startText="requesting..." id="status">
+                    <apex:facet name="start">
+                        <div class="slds-spinner_container">
+                            <div role="slert" class="slds-spinner--brand slds-spinner slds-spinner--large">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </apex:facet>
+                </apex:actionStatus>
+
+                <!--Invoice Page Headers-->
+                    <div class="slds-page-header">
+                        <div class="slds-grid">
+                            <div class="slds-col slds-has-flexi-truncate" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <div class="slds-media slds-no-space slds-grow">
+                                    <div class="slds-media__figure">
+                                        <svg class="slds-icon slds-icon-standard-user .slds-icon--small" aria-hidden="true">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#lead')}"></use>
+                                        </svg>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-title--caps slds-line-height--reset">Invoice</p>
+                                        <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate"
+                                            title="this should match the Record Title">Create Invoice</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- Invoice Page header ends-->
+
+                <!-- Invoice Section Starts -->
+                    <div class="slds-grid slds-wrap">
+
+                        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--large">
+                            <h3 class="slds-text-heading--small slds-m-bottom--medium">Invoice Information</h3>
+                        </div>
+
+                        <div class="slds-p-horizontal--small slds-size--1-of-2">
+                            <div class="slds-form-element slds-hint-parent">
+                                <label class="slds-form-element__label" for="input-unique-id"><span style="color:red;">* </span>Xero Contact</label>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField style="width:97%; line-height:1.875em;" value="{!invObj.Xero_Contact__c}" required="true"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-p-horizontal--small slds-size--1-of-2">
+                            <div class="slds-form-element slds-hint-parent">
+                                <span class="slds-form-element__label"><span style="color:red;">* </span>Invoice Number</span>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField styleClass="slds-input" value="{!invObj.Invoice_Number__c}"  required="true"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-size--1-of-2">
+                            <div class="slds-form-element slds-hint-parent">
+                                <span class="slds-form-element__label"><span style="color:red;">* </span>Invoice Status</span>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField styleClass="slds-input" value="{!invObj.Status__c}"  required="true"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-p-horizontal--small slds-size--1-of-2">
+                            <div class="slds-form-element slds-hint-parent">
+                                <span class="slds-form-element__label"><span style="color:red;">* </span>Type</span>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField styleClass="slds-input" value="{!invObj.Type__c}" required="true"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-p-horizontal--small slds-size--1-of-2">
+                            <div class="slds-form-element slds-hint-parent">
+                                <span class="slds-form-element__label"><span style="color:red;">* </span>Invoice Date</span>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField styleClass="slds-input" value="{!invObj.Date__c}" required="true"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-p-horizontal--small slds-size--1-of-2">
+                            <div class="slds-form-element slds-hint-parent">
+                                <span class="slds-form-element__label"><span style="color:red;">* </span>Invoice Due Date</span>
+                                <div class="slds-form-element__control">
+                                    <apex:inputField styleClass="slds-input" value="{!invObj.Due_Date__c}" required="true"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- Invoice Sections Ends -->
+                <!-- Invoice line Items -->
+
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--large">
+                        <h3 class="slds-text-heading--small slds-m-bottom--medium">Invoice Line Item Information</h3>
+                    </div>
+                    <!--<apex:outputPanel id="invoiceLinePanel">
+                    </apex:outputPanel>-->
+
+                    <div class="slds-card__body">
+                        <apex:actionRegion renderRegionOnly="true" >
+                            <apex:actionFunction action="{!addInvoiceLineItemRow}" name="addInvItem"  reRender="invoiceLinePanel" oncomplete="updateTotals();"/>
+
+                            <apex:actionFunction action="{!deleteInvoiceLineItemRow}" name="deleteInvItem"  reRender="invoiceLinePanel" oncomplete="updateTotals();updateVat();">
+                                <apex:param name="rowIndex" value=""/> 
+                            </apex:actionFunction>
+
+                            <apex:outputPanel id="invoiceLinePanel">
+                                
+                                <table class="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal slds-no-row-hover" width="100%" id="invLineItemTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="slds-text-heading--label slds-size--1-of-7"
+                                            scope="col">Xero Revenue Code</th>
+                                            <th class="slds-text-heading--label slds-size--1-of-7"
+                                            scope="col">Description</th>
+                                            <th class="slds-text-heading--label slds-size--1-of-7"
+                                            scope="col">Qty</th>
+                                            <th class="slds-text-heading--label slds-size--1-of-7"
+                                            scope="col">Unit Price</th>
+                                            <!--<th class="slds-text-heading--label slds-size--1-of-9"
+                                            scope="col">Disc%</th>-->
+                                            
+                                            <th class="slds-text-heading--label slds-size--1-of-7"
+                                            scope="col">Tax Rate</th>
+                                            <th class="slds-text-heading--label slds-size--1-of-7"
+                                            scope="col">Amount</th>
+                                            <th class="slds-text-heading--label slds-size--1-of-7"
+                                            scope="col"></th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        
+                                        <apex:repeat value="{!invItemWrapperList}" var="invItemVar" id="repeatId">
+                                        
+                                            <tr class="slds-hint-parent" id="SIROW">
+                                                <td class="slds-size--1-of-7">
+                                                    
+                                                        <apex:inputField style="width:90%; line-height:1.875em;" value="{!invItemVar.invItem.Xero_Revenue_Code__c}" id="inventoryId" >
+
+                                                            <!--<apex:actionSupport event="onchange" reRender="inventoryId,salesPriceId" oncomplete="populateInventoryDetails('{!invItemVar.invItem.Inventory__c}','{!invItemVar.counterWrap}');"/> -->
+                                                            
+                                                        </apex:inputField>
+                                                    
+                                                </td>
+                                                <td class="slds-size--1-of-7">
+                                                    <apex:inputField styleClass="slds-input" value="{!invItemVar.invItem.Description__c}" />
+                                                </td>
+                                                <!--<td class="slds-size--1-of-9">
+                                                    <apex:inputTextarea styleClass="slds-input" value="{!invItemVar.inventoryNameAsDescription}" />
+                                                </td>-->
+                                                <td class="slds-size--1-of-7">
+                                                    <apex:inputText styleClass="slds-input" value="{!invItemVar.invItemQuantity}" id="quantityId" onkeyup="updateTotals();return false;"/>
+                                                </td>
+                                                <td class="slds-size--1-of-7">
+                                                    <apex:inputText styleClass="slds-input" value="{!invItemVar.inventorySalesPrice}" id="salesPriceId" onkeyup="updateTotals();return false;"/>
+                                                </td>
+                                                
+                                                <td class="slds-size--1-of-7">
+                                                    <apex:inputField styleClass="slds-input" value="{!invItemVar.invItem.Tax_Rate__c}" id="TaxRateId" onchange="updateVat();return false;"/>
+                                                </td>
+                                                <td class="slds-size--1-of-7">
+                                                    <!--<input type="number" value="{!invItemVar.invItemAmount}" id="amountId" disabled="true" styleClass="slds-input"/>-->
+                                                    <apex:inputText styleClass="slds-input" value="{!invItemVar.invItemAmount}" id="amountId" style="background: #CCC;color: #333;"/>
+                                                    <!--<apex:input value="{!invItemAmount}" id="amountId" styleClass="slds-input" type="number"/>-->
+
+                                                </td>
+                                                
+                                                <td class="slds-size--1-of-7">
+                                                    <!--<button  onclick="deleteInvoiceItem('{!invItemVar.counterWrap}');return false;" class="slds-button slds-button_icon">
+                                                        <svg class="slds-icon slds-icon-text-default slds-icon--small" >
+                                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                                        </svg>
+                                                    </button>-->
+
+                                                    <apex:commandbutton image="{!URLFOR($Resource.DeleteImage)}" id="SaveChanges" onclick="deleteInvoiceItem('{!invItemVar.counterWrap}');return false;" style="height: 30px"/>﻿
+
+                                                </td>
+                                                
+                                            </tr>
+
+                                        </apex:repeat>
+                                        
+                                        
+                                    </tbody>
+                                </table>
+
+                            </apex:outputPanel>
+                        </apex:actionRegion>
+                        
+                        <br/>
+                    <!--<apex:commandButton value="Add Row" action="{!addInvoiceLineItemRow}"  immediate="true"/>-->
+                    
+                    <button class="slds-button slds-button_brand slds-button--small" onclick="addInvoiceItem();return false;">Add a new line</button>
+
+                    </div>
+                    
+                <!--Invoice Line Items Ends -->
+
+                <!-- Footer -->
+                    <footer class="slds-card__footer">
+                       <div>
+                            <label style="margin-right: 70px;">Subtotal</label>
+                            <span style="margin-right: 20px;">
+                                <!--<input type="integer" id="subTotal" readonly="true" class="subTotalField" value="{!subtotal}"/>-->
+                                <!--<apex:outputText label="Subtotal" value="{!subtotal}" id="subtotal"/>-->
+                                <!--<apex:inputText value="{!subtotal}" id="subtotal" disabled="true"/>-->
+                                <input type="integer" id="subtotal" readonly="true" style="border: 0px solid" value="{!subtotal}"/>
+                                
+                            </span>
+                       </div>
+                       <div id="gstRows" style="display: block;">
+                                <label style="margin-right: 70px;">VAT</label>
+                                <span style="margin-right: 20px;">
+                                    <input type="integer" id="vat" readonly="true" style="border: 0px solid" value="{!vat}"/>
+                                </span>
+                       </div>
+                       <hr  />
+                       <div id="invoiceTotalSection">    
+                            <label id="InvoiceTotal" style="margin-right: 70px;font-size: x-large;font-weight: bold">TOTAL</label>
+                            <span style="margin-right: 20px;">
+                                <!--<apex:outputText label="total" value="{!total}" id="total"/>-->
+                                <input type="integer" id="total" readonly="true" style="border: 0px solid" value="{!total}"/>
+                            </span>
+                        </div>
+                        <hr class="doubleborder" />
+                        
+                        <apex:commandButton value="Save" onclick="saveInvoice();return false;" styleClass="slds-button slds-button_brand" style="padding:0px 60px 0px 60px;" status="status" />
+                         <!--<button class="slds-button slds-button_brand" onclick="saveInvoice();return false;" style="padding:0px 60px 0px 60px;">Save</button>-->
+                         <!--<button class="slds-button slds-button_neutral" onclick="addInvoiceItem();return false;">Cancel</button>-->
+                         <apex:commandButton value="Cancel" action="{!cancel}" styleClass="slds-button slds-button_neutral" /> 
+                    </footer>
+                <!-- footer Ends -->
+            </apex:form>
+        </body>
+    </html>
+   <script type="text/javascript">
+        //alert(1);
+        jQuery.noConflict();
+        jQuery(document).ready(function() {
+           // alert('i m header');
+            updateTotals();
+            //jQuery('[id$=disId]').attr('disabled', true);
+            //alert(1);            
+            jQuery('[id$=quantityId]').keyup(function() {
+                //update_amounts();
+                //alert('i m header1');
+                updateTotals();
+            });
+            //jQuery('[id$=disId]').attr('disabled', true);
+            jQuery('[id$=salesPriceId]').keyup(function() {
+                //update_amounts();
+               // alert('i m header2');
+                updateTotals();
+            });
+          });
+       
+        function updateTotals() {
+            var sum = 0.00;
+            var amountToAdd ;
+            //var subTotalFinal = 0.00;
+
+            jQuery('#invLineItemTable > tbody  > tr').each(function () {
+                //var qty = $(this).find('option:selected').val();
+
+                var qty = jQuery(this).find('[id$=quantityId]').val();
+               // alert(qty);
+                var unitPrice = jQuery(this).find('[id$=salesPriceId]').val();
+                //alert(unitPrice);
+                var amount = (qty * unitPrice);
+                amount = amount.toFixed(2);
+                //alert(amount);
+                //sum += subtotal;
+
+                jQuery(this).find('[id$=amountId]').val(amount);
+                sum += Number(amount);              
+
+            });
+            jQuery('#subtotal').val(sum.toFixed(2));
+           // jQuery('#total').val(sum.toFixed(2));
+           jQuery('#total').val((Number(jQuery('#vat').val()) + Number(jQuery('#subtotal').val())).toFixed(2));
+        }
+
+        function addInvoiceItem() {
+            addInvItem();
+            return false;
+        }
+        function deleteInvoiceItem(counterWrap) {
+            //alert(counterWrap);
+            deleteInvItem(counterWrap);
+            //updateTotals();
+            return false;
+        }
+
+        function saveInvoice() {
+            var sub = jQuery('#subtotal').val();
+            var total = jQuery('#total').val();
+            saveXeroInvoice(sub,total);
+            return false;
+        }
+        
+        function updateVat() {
+        var taxAmount =0.00;
+        
+            jQuery('#invLineItemTable > tbody  > tr').each(function () {
+                var TaxRate = jQuery(this).find('[id$=TaxRateId]').val();
+               // alert(TaxRate);       
+                if(TaxRate == '20% (VAT on Income)') {
+                    taxAmount += Number(jQuery(this).find('[id$=amountId]').val() * (20/100));  
+                }
+                if(TaxRate == '5% (VAT on Income)') {
+                    taxAmount += Number(jQuery(this).find('[id$=amountId]').val() * (5/100));            
+                }               
+            });
+             jQuery('#vat').val(taxAmount.toFixed(2));
+            jQuery('#total').val((Number(jQuery('#vat').val()) + Number(jQuery('#subtotal').val())).toFixed(2));
+            //jQuery('#total').val(number(vat.toFixed(2)+subtotal.toFixed(2)));
+              
+        }
+        
+
+    </script>  
+</apex:page>
