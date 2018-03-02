@@ -1,0 +1,906 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"re",
+				"required\t(Boolean)"
+			],
+			[
+				"co",
+				"color"
+			],
+			[
+				"on",
+				"oncomplete\t(String)"
+			],
+			[
+				"style",
+				"styleClass\t(String)"
+			],
+			[
+				"input",
+				"apex:inputText"
+			],
+			[
+				"value",
+				"PUBLIC valueOf(String i) \tInteger"
+			],
+			[
+				"xin",
+				"xInvRec"
+			],
+			[
+				"n",
+				"null"
+			],
+			[
+				"start",
+				"startText\t(String)"
+			],
+			[
+				"show",
+				"showHeader\t(Boolean)"
+			],
+			[
+				"Pa",
+				"PageReference\t[Standard Apex Class]"
+			],
+			[
+				"Htt",
+				"HttpResponse\t[Standard Apex Class]"
+			],
+			[
+				"get",
+				"PUBLIC getLineNumber() \tInteger"
+			],
+			[
+				"equa",
+				"PUBLIC equalsIgnoreCase(String other) \tBoolean"
+			],
+			[
+				"mar",
+				"margin-bottom"
+			],
+			[
+				"to",
+				"toLowerCase"
+			],
+			[
+				"outPut",
+				"apex:outputPanel"
+			],
+			[
+				"ou",
+				"apex:outputPanel"
+			],
+			[
+				"marg",
+				"margin-left"
+			],
+			[
+				"margin",
+				"margin-right"
+			],
+			[
+				"se",
+				"PUBLIC setRedirect(Boolean redirect) \tSystem.PageReference"
+			],
+			[
+				"Duedi",
+				"Duedil"
+			],
+			[
+				"Acc",
+				"AccountResponseWrapper"
+			],
+			[
+				"compa",
+				"companyId"
+			],
+			[
+				"comap",
+				"companyId"
+			],
+			[
+				"conyt",
+				"countryCode"
+			],
+			[
+				"va",
+				"PUBLIC valueOf(String str) \tDate"
+			],
+			[
+				"account",
+				"accountObjRec"
+			],
+			[
+				"com",
+				"companyId"
+			],
+			[
+				"http",
+				"httpCalloutRequest"
+			],
+			[
+				"Sea",
+				"SearchCompanyRequest"
+			],
+			[
+				"Cr",
+				"Criteria"
+			],
+			[
+				"is",
+				"PUBLIC isNotBlank(String str) \tBoolean"
+			],
+			[
+				"T",
+				"Title__c"
+			],
+			[
+				"but",
+				"buttons"
+			],
+			[
+				"butt",
+				"buttonObj"
+			],
+			[
+				"s",
+				"subtitle"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/pages/XeroSetupPage.page",
+			"settings":
+			{
+				"buffer_size": 14262,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroSetupController.cls",
+			"settings":
+			{
+				"buffer_size": 12637,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/CompanyHouseCallout.cls",
+			"settings":
+			{
+				"buffer_size": 10613,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroAccountingApi.cls",
+			"settings":
+			{
+				"buffer_size": 17463,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroInvoice.cls",
+			"settings":
+			{
+				"buffer_size": 2373,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "public without sharing class XeroAddInvoiceExtension {\n\n\tpublic Xero_Invoices__c invObj {get;set;}\n    private Integer counter;\n    public List<InvoiceItemWrapper> invItemWrapperList {get;set;}\n    public String invItemAmount {get;set;}\n    public Integer inventoryUnitPrice {get;set;}\n    public Decimal subtotal {get;set;}\n    public Decimal vat {get;set;}\n    public Decimal total {get;set;}\n\n\n    public XeroAddInvoiceExtension(ApexPages.StandardController stdController) {\n        //this.mysObject = (sObject)stdController.getRecord();\n        invItemAmount = string.valueOf(0.00);\n        invObj = new Xero_Invoices__c();\n        subtotal = 0.00;\n        total = 0.00;\n        vat = 0.00;\n        counter = 0;\n        invItemWrapperList = new List<InvoiceItemWrapper>();\n        for(Integer i=0 ; i< 2; i++) {\n               InvoiceItemWrapper invItemWrap = new InvoiceItemWrapper(new Xero_Invoice_Line_Items__c()); \n               counter++;\n               invItemWrap.counterWrap = counter;\n               invItemWrap.inventorySalesPrice = String.valueof(0.00);\n               invItemWrap.inventoryNameAsDescription = '';\n               invItemWrap.invItemQuantity = String.valueof(0);\n               invItemWrap.invItemAmount = String.valueof(0.00);\n               invItemWrapperList.add(invItemWrap); \n               \n        }\n        System.debug('@@@@invItemWrapperList invItemWrapperList'+invItemWrapperList);\n    }\n\n    /*\n    public List<SelectOption> getCurrencyValues() {\n      List<SelectOption> options = new List<SelectOption>();\n\n       Schema.DescribeFieldResult fieldResult = Invoice__c.CurrencyIsoCode.getDescribe();\n\n       List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();\n\n       for( Schema.PicklistEntry f : ple) {\n          //Concatinating currency values like  ( value \"USD\" label \"U.S. Dollar\" ) \n          string finalvalue= f.getValue() + '-' + f.getLabel() ;\n\n          options.add(new SelectOption(finalvalue, finalvalue));\n       }       \n       return options;\n    }*/\n\n    public PageReference addInvoiceLineItemRow(){\n        InvoiceItemWrapper invItemWrap = new InvoiceItemWrapper(new Xero_Invoice_Line_Items__c()); \n        \n        counter++;\n        invItemWrap.counterWrap = counter;\n        invItemWrap.inventorySalesPrice = String.valueof(0.00);\n        invItemWrap.inventoryNameAsDescription = '';\n        invItemWrap.invItemQuantity = String.valueof(0);\n        invItemWrap.invItemAmount = String.valueof(0.00); \n        invItemWrapperList.add(invItemWrap);\n        System.debug('@@@@invItemWrapperList Size'+counter);\n        System.debug('@@@@invItemWrapperList'+invItemWrapperList);\n        System.debug('@@@@invItemWrapperList Size'+invItemWrapperList.size()); \n        return null;    \n    }\n    public void deleteInvoiceLineItemRow(){\n    \n        Integer param = Integer.valueOf(Apexpages.currentpage().getParameters().get('rowIndex'));\n        System.debug('param--->'+param);\n        \n        for(Integer i = 0; i < invItemWrapperList.size(); i++){\n            if(invItemWrapperList[i].counterWrap == param ){\n                invItemWrapperList.remove(i);     \n            }\n        }\n        counter --;\n    }\n\n    public class InvoiceItemWrapper{\n        public Xero_Invoice_Line_Items__c invItem{get;set;}\n        public String inventorySalesPrice {get;set;}\n        public String invItemAmount {get;set;}\n        public String invItemQuantity {get;set;}\n        public String inventoryNameAsDescription {get;set;}\n        public Integer counterWrap{get;set;}\n        \n        public InvoiceItemWrapper(Xero_Invoice_Line_Items__c invItem){\n            this.invItem = invItem;  \n        }\n    }\n    /*\n    public void getInventoryRecords() {\n        //InvoiceItemWrapper invItemWrap = new InvoiceItemWrapper(new Invoice_Item__c());\n        String inventoryId = ApexPages.currentPage().getParameters().get('inventoryId');\n\n        Product_Master__c invtObjRec = [Select Id, \n                                            Name,\n                                            Sales_Price__c\n                                            From Product_Master__c where Id =:inventoryId];\n                                            /*\n        InvoiceItemWrapper invItemWrap = new InvoiceItemWrapper(new Invoice_Item__c(Unit_Price__c = invtObjRec.Sales_Price__c, \n                                                Description__c = invtObjRec.Name,\n                                                Quantity__c = 1));\n\n        invItemWrapperList.add(invItemWrap);\n        Integer indexNumber = Integer.valueOf(Apexpages.currentpage().getParameters().get('rowIndex'));\n        invItemWrapperList[indexNumber-1].inventorySalesPrice = String.valueof(invtObjRec.Sales_Price__c);\n        invItemWrapperList[indexNumber-1].inventoryNameAsDescription = invtObjRec.Name;\n        invItemWrapperList[indexNumber-1].invItemQuantity = String.valueOf(1);\n        invItemWrapperList[indexNumber-1].invItemAmount = String.valueof(invtObjRec.Sales_Price__c * 1);\n        System.debug('invItemWrapperList'+invItemWrapperList);\n\n        System.debug(LoggingLevel.INFO,'indexNumber '+indexNumber);\n        System.debug(LoggingLevel.INFO,'InventoryID '+inventoryId);\n        System.debug(LoggingLevel.INFO,'invtObjRec Record '+invItemWrapperList);\n    }*/\n\n    /*\n    public void getUpdatedAmount() {\n        Integer indexNumber = Integer.valueOf(Apexpages.currentpage().getParameters().get('rowIndex'));\n\n\n        System.debug(LoggingLevel.INFO,'Quantity '+Integer.valueOf(Apexpages.currentpage().getParameters().get('quantity')));\n        System.debug(LoggingLevel.INFO,'SP '+Apexpages.currentpage().getParameters().get('salesprice'));\n\n        if(Apexpages.currentpage().getParameters().get('quantity') != '') {\n\n            invItemWrapperList[indexNumber].invItemAmount = String.valueof(Integer.valueof(invItemWrapperList[indexNumber].inventorySalesPrice) *\n                                                                Integer.valueOf(Apexpages.currentpage().getParameters().get('quantity')));\n\n        } else if(Apexpages.currentpage().getParameters().get('salesprice') != '') {\n            invItemWrapperList[indexNumber].invItemAmount = String.valueOf(Integer.valueof(Apexpages.currentpage().getParameters().get('salesprice')) *\n                                                                Integer.valueof(invItemWrapperList[indexNumber].invItemQuantity));\n        } else {\n            invItemWrapperList[indexNumber].invItemAmount = String.valueof(0.00);\n        }\n        System.debug(LoggingLevel.INFO,'invItemWrapperList[indexNumber].invItemAmount '+invItemWrapperList[indexNumber].invItemAmount);\n        \n        Integer quantity = Integer.valueOf(Apexpages.currentpage().getParameters().get('quantity'));\n        Decimal salesPrice = Decimal.valueOf(Apexpages.currentpage().getParameters().get('salesprice'));\n\n        System.debug(LoggingLevel.INFO,'indexNumber '+indexNumber);\n        System.debug(LoggingLevel.INFO,'indexNumber Salesprice '+invItemWrapperList[indexNumber].inventorySalesPrice);\n        System.debug(LoggingLevel.INFO,'indexNumber invItemQuantity '+invItemWrapperList[indexNumber].invItemQuantity);\n        invItemWrapperList[indexNumber].invItemAmount = String.valueOf(Integer.valueOf(invItemWrapperList[indexNumber].inventorySalesPrice) \n                                                    * Integer.valueOf(invItemWrapperList[indexNumber].invItemQuantity));\n        \n    }*/\n\n   \n    public PageReference saveInvoice() {\n        \n        PageReference pageRef = null;\n        Decimal subTotalUpdated = Decimal.valueOf(Apexpages.currentpage().getParameters().get('subtotal'));\n        Decimal totalUpdated = Decimal.valueOf(Apexpages.currentpage().getParameters().get('total'));\n\n        System.debug(LoggingLevel.INFO,'subTotal '+subTotal);\n        System.debug(LoggingLevel.INFO,'total '+total);\n\n        List<Xero_Invoice_Line_Items__c> invItemsToInsert = new List<Xero_Invoice_Line_Items__c>();\n        System.debug(LoggingLevel.INFO,'Invoice to Insert '+invObj);\n        System.debug(LoggingLevel.INFO,'Invoice Item Wrapper'+invItemWrapperList);\n        Savepoint sp = Database.setSavepoint();\n\n        try {\n            if(invObj != null) {\n                //String currencyCode = invObj.CurrencyIsoCode.substringBefore('-');\n                //System.debug('$$$$$currencyCode'+currencyCode);\n                //invObj.CurrencyIsoCode = currencyCode;\n                invObj.SubTotal__c = subTotalUpdated;\n                invObj.Total__c = totalUpdated;\n                insert invObj;\n\n\n                if(invObj.Id != null) {\n                    if(invItemWrapperList != null && !invItemWrapperList.isEmpty()) {\n                        for(InvoiceItemWrapper item : invItemWrapperList) {\n                            Xero_Invoice_Line_Items__c invItemRec = new Xero_Invoice_Line_Items__c();\n                            invItemRec.Xero_Revenue_Code__c = item.invItem.Xero_Revenue_Code__c;\n                            invItemRec.Description__c =  item.invItem.Description__c;\n                            invItemRec.Quantity__c =  Integer.valueOf(item.invItemQuantity);\n\n                            invItemRec.Tax_Rate__c =  item.invItem.Tax_Rate__c;\n                            invItemRec.UnitAmount__c =  Integer.valueOf(item.inventorySalesPrice);\n                            invItemRec.Account_Code__c = item.invItem.Xero_Revenue_Code__r.Code__c;\n                            //invItemRec.Discount__c =  item.invItem.Discount__c;\n                            invItemRec.Xero_Invoice__c = invObj.Id;\n                            //invItemRec.CurrencyIsoCode = currencyCode;\n                            invItemsToInsert.add(invItemRec);\n                        }\n                        if(invItemsToInsert != null && !invItemsToInsert.isEmpty()) {\n                            System.debug(LoggingLevel.INFO,'Invoice Items to Insert '+invItemsToInsert);\n                            insert invItemsToInsert;\n\n                            pageRef = new PageReference('/' + invObj.Id); \n                        }\n                    }\n                    if(invObj.Id != null) {\n                        createInvoiceInXero(invObj.Id);\n                    }\n                }\n            }\n        } catch (DmlException dmlexcep) {\n            Database.rollback(sp);\n            System.debug('Error while saving invoice items due to :'+dmlexcep.getMessage());\n            Apexpages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, dmlexcep.getMessage()));\n            pageRef = null;\n            //Apexpages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, dmlexcep.getCause()));\n            //Apexpages.addMessage(new ApexPages.Message(Apexpages.Severity.Error, dmlexcep.getLineNumber()));\n        }\n\n        return pageRef;\n    }\n\n    public static void createInvoiceInXero(Id invObjId) {\n\n        String consumerKey ;\n        Xero_Setting__mdt[] xeroSettings = [SELECT MasterLabel, \n                                                QualifiedApiName,\n                                                DeveloperName, \n                                                Endpoint_URL__c, \n                                                Xero_Consumer_Key__c\n                                                FROM Xero_Setting__mdt];\n        Xero_Invoices__c xeroInvc = [Select Id,\n                                        Name,\n                                        Date__c,\n                                        Invoice_Number__c,\n                                        Status__c,\n                                        SubTotal__c, \n                                        Total__c,\n                                        Type__c,\n                                        Xero_Contact__r.Xero_Account__c,\n                                        Xero_Contact__r.Xero_Contact_Id__c, \n                                        Xero_Contact__c from Xero_Invoices__c Where Id =: invObjId];\n\n        System.debug('$$$$xeroInvc'+xeroInvc);\n\n        List<Xero_Invoice_Line_Items__c> lstInvoiceItem = new list<Xero_Invoice_Line_Items__c>();\n        lstInvoiceItem =[Select Id,\n                            Name,\n                            Account_Code__c,\n                            Description__c, \n                            LineItem_Id__c, \n                            Quantity__c, \n                            Tax_Rate__c, \n                            UnitAmount__c,\n                            Xero_Invoice__c, \n                            Xero_Revenue_Code__c,\n                            Xero_Revenue_Code__r.Code__c\n                            From Xero_Invoice_Line_Items__c \n                            Where Xero_Invoice__r.Id  =: xeroInvc.Id];\n\n        System.debug('$$$$lstInvoiceItem'+lstInvoiceItem);\n\n\n        if(xeroInvc.Xero_Contact__r.Xero_Account__c == 'Chargifi UK') {\n            consumerKey = getConsumerKey('UK_Org');\n        } else if(xeroInvc.Xero_Contact__r.Xero_Account__c == 'Chargifi US') {\n            consumerKey = getConsumerKey('US_Org');\n        }\n        list<XeroInvoice_Create> lstXeroInvoiceToSend = new list<XeroInvoice_Create>();\n            \n        XeroInvoice_Create newInvoice = new XeroInvoice_Create();\n        \n        Date invDate = xeroInvc.Date__c;\n        //Date payDate = invoiceToSync.Payment_Due_Date__c;\n\n        \n        Datetime dt = datetime.newInstance(invDate.year(), invDate.month(),invDate.day());\n        newInvoice.Date1 = datetime.newInstance(invDate.year(), invDate.month(),invDate.day()).formatGMT('yyyy-MM-dd\\'T\\'HH:mm:ss');\n        //newInvoice.DueDate = datetime.newInstance(payDate.year(), payDate.month(),payDate.day()).formatGMT('yyyy-MM-dd\\'T\\'HH:mm:ss');\n        \n        newInvoice.Type = xeroInvc.Type__c;\n        //newInvoice.LineAmountTypes = xeroInvc.Line_Amount_Type__c;\n        //newInvoice.CurrencyCode = xeroInvc.CurrencyISOCode;\n        newInvoice.Status = xeroInvc.Status__c;\n\n        System.debug('$$$$xeroInvc.Xero_Contact__r.Xero_Contact_Id__c'+xeroInvc.Xero_Contact__r.Xero_Contact_Id__c);\n        XeroContact_Create newContact = new XeroContact_Create(); \n        newContact.ContactID = xeroInvc.Xero_Contact__r.Xero_Contact_Id__c;\n        \n        \n        newInvoice.Contact = newContact;\n\n\n        List<XeroInvoice_Create.LineItem> lstInvoicelineItem = new List<XeroInvoice_Create.LineItem>();\n\n        for(Xero_Invoice_Line_Items__c invoiceLineitemForVar : lstInvoiceItem){\n            XeroInvoice_Create.LineItem lineItemVar = new XeroInvoice_Create.LineItem();\n            \n            lineItemVar.Name = invoiceLineitemForVar.Name;\n            lineItemVar.IsSold = true;\n            lineItemVar.Description = invoiceLineitemForVar.Description__c;\n            lineItemVar.UnitAmount = invoiceLineitemForVar.UnitAmount__c;\n            lineItemVar.Quantity = invoiceLineitemForVar.Quantity__c;\n            //lineItemVar.TaxAmount = invoiceLineitemForVar.Tax__c;\n            //lineItemVar.DiscountRate=invoiceLineitemForVar.Discount__c;\n            lineItemVar.AccountCode = invoiceLineitemForVar.Xero_Revenue_Code__r.Code__c;\n            //lineItemVar.Code = invoiceLineitemForVar.Product_Code__c;\n            //lineItemVar.ItemCode = invoiceLineitemForVar.Product_Code__c;\n            lstInvoicelineItem.add(lineItemVar);\n        }\n        newInvoice.LineItems = lstInvoicelineItem;\n        System.debug('$$$$consumerKey'+consumerKey);\n        System.debug('$$$$newInvoice'+newInvoice);\n        lstXeroInvoiceToSend.add(newInvoice);\n            \n        String xmlInvoiceString = XeroXmlUtility.serialize(lstXeroInvoiceToSend[0], 'Invoice');\n        xmlInvoiceString = xmlInvoiceString.replace('Date1','Date');\n        System.debug('XML Invoice'+xmlInvoiceString);\n\n        if(!lstInvoicelineItem.isEmpty()) {\n            createCalloutToXero(xmlInvoiceString, xeroInvc.Id,consumerKey);\n        }\n    }\n\n    public static String getConsumerKey (String orgName) {\n\n        Xero_Setting__mdt xeroSetting = [SELECT MasterLabel, \n                                            QualifiedApiName,\n                                            DeveloperName, \n                                            Endpoint_URL__c, \n                                            Xero_Consumer_Key__c\n                                            FROM Xero_Setting__mdt Where DeveloperName =: orgName];\n        return xeroSetting.Xero_Consumer_Key__c;\n    }\n\n    @Future(callout=true)\n    public static void createCalloutToXero(string xmlInvoiceString,\n                                                Id invoiceIdToSync,\n                                                String consumerKey) {\n        try { \n\n            Xero_Invoices__c invoiceToUdpateInSF = new Xero_Invoices__c();\n            invoiceToUdpateInSF.Id = invoiceIdToSync;\n\n            System.debug('XML Invoice'+xmlInvoiceString);\n            // Send Invoice to Xero\n            XeroInvoice_Create createdInvoice = XeroAccountingAPI.createInvoice(xmlInvoiceString,consumerKey);\n            System.debug('Invoice Response-->'+createdInvoice);\n\n            invoiceToUdpateInSF.Xero_Invoice_Id__c = createdInvoice.InvoiceId;\n            invoiceToUdpateInSF.Invoice_Number__c = createdInvoice.InvoiceNumber;\n\n            update invoiceToUdpateInSF;\n            \n        } catch(Exception e) {\n            // If logging enabled, output the Exception\n            System.debug(LoggingLevel.INFO, 'Exception1: ' + e.getTypeName());\n            System.debug(LoggingLevel.INFO, 'Exception2: ' + e.getLineNumber());\n            System.debug(LoggingLevel.INFO, 'Exception3: ' + e.getCause());\n            System.debug(LoggingLevel.INFO, 'Exception4: ' + e.getMessage());\n            System.debug(LoggingLevel.INFO, 'Exception5: ' + e.getStackTraceString());\n        }\n\n    }\n    \n}",
+			"file": "src/classes/XeroAddInvoiceExtension.cls",
+			"file_size": 17789,
+			"file_write_time": 131637818555503717,
+			"settings":
+			{
+				"buffer_size": 17782,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/pages/XeroAddInvoice.page",
+			"settings":
+			{
+				"buffer_size": 15849,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroInvoice_Create.cls",
+			"settings":
+			{
+				"buffer_size": 3964,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroCalloutUtility.cls",
+			"settings":
+			{
+				"buffer_size": 4784,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroPayment.cls",
+			"settings":
+			{
+				"buffer_size": 484,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroCalloutResponseParser.cls",
+			"settings":
+			{
+				"buffer_size": 4632,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/classes/XeroXmlUtility.cls",
+			"settings":
+			{
+				"buffer_size": 7489,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 119.0,
+		"last_filter": "Package Control: insta",
+		"selected_items":
+		[
+			[
+				"Package Control: insta",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 444.0
+	},
+	"console":
+	{
+		"height": 130.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by);",
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/pages"
+	],
+	"file_history":
+	[
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroInvoice.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/pages/DuedilVFPage.page",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroContact_Create.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroContact.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/HttpCalloutException.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/pages/DuedilPagewithupdateandfind.html",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroRevenueCodes.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroCalloutResponseParser.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroInventory.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/pages/XeroAddInvoice.page-meta.xml",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroOrganisation.cls",
+		"/Users/creationtechnology/Downloads/MyAdvDev/src/classes/VFC_PointTrackerInformationController.cls",
+		"/Users/creationtechnology/Downloads/MyAdvDev/src/classes/TransactionTriggerHandler.cls",
+		"/Users/creationtechnology/Downloads/MyAdvDev/src/pages/VF_PointTrackerInformation.page",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/CompanyFillingHistoryController.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/CompanyHouseCallout.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroOAuthUtility.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/pages/XeroSetupPage.page-meta.xml",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/XeroSetup.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/DuedilController.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/classes/BlockRestService.cls",
+		"/Users/creationtechnology/Documents/SublimeProjects/CreationBot/src/pages/duillpagewithcheckbox.html",
+		"/Users/creationtechnology/Downloads/MyAdvDev/src/classes/DuidillControllerWithCheckbook.cls",
+		"/Users/creationtechnology/Desktop/DuedilCOntrollerFeb1.cls",
+		"/Users/creationtechnology/Desktop/DuedilVFPageFeb1.html",
+		"/Users/creationtechnology/Desktop/salesforce-bot-messenger-master/modules/formatter-messenger.js",
+		"/Users/creationtechnology/Desktop/salesforce-bot-messenger-master/modules/webhook.js",
+		"/Users/creationtechnology/Desktop/messenger-webhook/index.js",
+		"/Users/creationtechnology/Desktop/salesforceupdatenode.js",
+		"/Users/creationtechnology/Desktop/query.js",
+		"/Users/creationtechnology/Desktop/connect.js",
+		"/Users/creationtechnology/Desktop/jsforce.js",
+		"/Users/creationtechnology/Desktop/connections.js",
+		"/Users/creationtechnology/Desktop/salesforce-bot-messenger-master/modules/salesforce.js",
+		"/Users/creationtechnology/Library/Application Support/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
+		"/Users/creationtechnology/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 101.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"invoiceLinePanel",
+			"at",
+			"at at",
+			"disId",
+			"Invoice_Item__c",
+			"xeroInvoicesToInsert",
+			"importXC",
+			"massImportAccountsAction",
+			"massImportAccounts",
+			"createCompanyRequestWrapper",
+			"Duedil_Status__c",
+			"accountCompNameAdv",
+			"Duedil_Status__c",
+			"Active__c",
+			"searchAccountFromDuedill",
+			"massImportAccounts",
+			"massImportAccountsAction",
+			"pageMessage",
+			"accountResults",
+			"accountDetails",
+			"accountListPanel",
+			"apex:outputPanel",
+			"Database.SaveResult",
+			"Database.upsert",
+			"upsert",
+			"accountListForMassImport",
+			"accountList",
+			"massImportAccounts",
+			"accountList",
+			"exchangeOfferWrapList",
+			"fetchStdSetExchangeResults",
+			"stdSetCon",
+			"fetchExchangeOffers",
+			"fetchStdSetExchangeResults",
+			"stdSetCon",
+			"exchangeOfferWrapList",
+			"accountDetails",
+			"searchAccountFromDuedill",
+			"searchAccount",
+			"searchAccountFromDuedill",
+			"findAndEnrichPanel",
+			"accountInfo",
+			"importAccount",
+			"importAccountToSalesforce",
+			"searchAccount"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/pages/XeroSetupPage.page",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14262,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								56,
+								60
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Visualforce.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/classes/XeroSetupController.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12637,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12637,
+								12637
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 3655.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/classes/CompanyHouseCallout.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10613,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1940,
+								1996
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 4.0,
+						"translation.y": 2685.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/classes/XeroAccountingApi.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17463,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7591,
+								7591
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 4.0,
+						"translation.y": 6542.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/classes/XeroInvoice.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2373,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								563,
+								573
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "src/classes/XeroAddInvoiceExtension.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17782,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								16892,
+								16910
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2978.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/pages/XeroAddInvoice.page",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15849,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								531,
+								531
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Visualforce.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/classes/XeroInvoice_Create.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3964,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								623,
+								623
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/classes/XeroCalloutUtility.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4784,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1796,
+								1807
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 663.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/classes/XeroPayment.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 484,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								59,
+								67
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "src/classes/XeroCalloutResponseParser.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4632,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2989,
+								3002
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 651.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "src/classes/XeroXmlUtility.cls",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7489,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/MavensMate/sublime/lang/Apex.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.MavensMate-OutputPanel":
+	{
+		"height": 83.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "CreationBot.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"xeroinv",
+				"src/classes/XeroInvoice.cls"
+			],
+			[
+				"companyhousecallout",
+				"src/classes/CompanyHouseCallout.cls"
+			],
+			[
+				"xerocalloutresponseparser",
+				"src/classes/XeroCalloutResponseParser.cls"
+			],
+			[
+				"xerocontact",
+				"src/classes/XeroContact.cls"
+			],
+			[
+				"xeroinvoice",
+				"src/classes/XeroInvoice.cls"
+			],
+			[
+				"xeroxmlutility",
+				"src/classes/XeroXmlUtility.cls"
+			],
+			[
+				"xerocalloututility",
+				"src/classes/XeroCalloutUtility.cls"
+			],
+			[
+				"xerocall",
+				"src/classes/XeroCalloutUtility.cls"
+			],
+			[
+				"xerooauth",
+				"src/classes/XeroOAuthUtility.cls"
+			],
+			[
+				"xeroaccountingapi",
+				"src/classes/XeroAccountingApi.cls"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 224.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

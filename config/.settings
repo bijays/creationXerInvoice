@@ -1,0 +1,17 @@
+{
+    "projectName": "CreationBot",
+    "username": "bijays@creation.technology",
+    "id": "d42ad9b0-0028-11e8-b006-4110f6827311",
+    "namespace": "",
+    "orgType": "developer",
+    "loginUrl": "https://login.salesforce.com/",
+    "instanceUrl": "https://creationbot-dev-ed.my.salesforce.com",
+    "workspace": "/Users/creationtechnology/Documents/SublimeProjects",
+    "subscription": [
+        "ApexClass",
+        "ApexComponent",
+        "ApexPage",
+        "ApexTrigger",
+        "StaticResource"
+    ]
+}

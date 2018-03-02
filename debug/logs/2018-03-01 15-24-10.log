@@ -1,0 +1,31 @@
+40.0 APEX_CODE,FINEST;APEX_PROFILING,INFO;CALLOUT,INFO;DB,INFO;SYSTEM,DEBUG;VALIDATION,INFO;VISUALFORCE,INFO;WAVE,INFO;WORKFLOW,INFO
+15:24:09.0 (347185)|USER_INFO|[EXTERNAL]|0050N000006oSnw|bijays@creation.technology|Greenwich Mean Time|GMTZ
+15:24:09.0 (381583)|EXECUTION_STARTED
+15:24:09.0 (385851)|CODE_UNIT_STARTED|[EXTERNAL]|0660N000002qxF8|VF: /apex/XeroAddInvoice
+15:24:09.0 (537016)|VF_DESERIALIZE_VIEWSTATE_BEGIN|0660N000002qxF8
+15:24:09.0 (3899277)|HEAP_ALLOCATE|[72]|Bytes:3
+15:24:09.0 (3963063)|HEAP_ALLOCATE|[77]|Bytes:152
+15:24:09.0 (3980437)|HEAP_ALLOCATE|[342]|Bytes:408
+15:24:09.0 (3996267)|HEAP_ALLOCATE|[355]|Bytes:408
+15:24:09.0 (4009465)|HEAP_ALLOCATE|[467]|Bytes:48
+15:24:09.0 (4040724)|HEAP_ALLOCATE|[139]|Bytes:6
+15:24:09.0 (6781170)|VF_DESERIALIZE_VIEWSTATE_END
+15:24:09.63 (63810921)|CUMULATIVE_LIMIT_USAGE
+15:24:09.63 (63810921)|LIMIT_USAGE_FOR_NS|(default)|
+  Number of SOQL queries: 0 out of 100
+  Number of query rows: 0 out of 50000
+  Number of SOSL queries: 0 out of 20
+  Number of DML statements: 0 out of 150
+  Number of DML rows: 0 out of 10000
+  Maximum CPU time: 0 out of 10000
+  Maximum heap size: 0 out of 6000000
+  Number of callouts: 0 out of 100
+  Number of Email Invocations: 0 out of 10
+  Number of future calls: 0 out of 50
+  Number of queueable jobs added to the queue: 0 out of 50
+  Number of Mobile Apex push calls: 0 out of 10
+
+15:24:09.63 (63810921)|CUMULATIVE_LIMIT_USAGE_END
+
+15:24:09.0 (63854846)|CODE_UNIT_FINISHED|VF: /apex/XeroAddInvoice
+15:24:09.0 (64631890)|EXECUTION_FINISHED

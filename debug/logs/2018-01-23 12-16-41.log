@@ -1,0 +1,76 @@
+41.0 APEX_CODE,FINEST;APEX_PROFILING,INFO;CALLOUT,INFO;DB,INFO;SYSTEM,DEBUG;VALIDATION,INFO;VISUALFORCE,INFO;WAVE,INFO;WORKFLOW,INFO
+Execute Anonymous: 
+Execute Anonymous: Http postH = new Http();
+Execute Anonymous: 
+Execute Anonymous: HttpRequest postReq = new HttpRequest();
+Execute Anonymous: string endPointValue = 'https://creationbot-dev-ed.my.salesforce.com/services/oauth2/token';
+Execute Anonymous: postReq.setEndpoint(endPointValue);
+Execute Anonymous: postReq.setBody('grant_type='+'password' +
+Execute Anonymous:                 '&client_id=' + '3MVG9TSaZ8P6zP1pjFiXR8g.2XjQ89MlDtOeYXx3SGF0VlfkRqjnYWRJUzj3rE54VhYWlfreMFlRODJIMlcWQ' +
+Execute Anonymous:                 '&client_secret=' + '627198209513811766' +
+Execute Anonymous:                 '&username='+'bijays@creation.technology' + '&password='+'BM@1227174');
+Execute Anonymous: postReq.setMethod('POST');
+Execute Anonymous: HttpResponse postRep = postH.send(postReq);
+Execute Anonymous: System.debug('Response'+postRep.getbody());
+Execute Anonymous: 
+Execute Anonymous: 
+12:16:40.2 (2529448)|USER_INFO|[EXTERNAL]|0050N000006oSnw|bijays@creation.technology|Greenwich Mean Time|GMTZ
+12:16:40.2 (2646061)|EXECUTION_STARTED
+12:16:40.2 (2649676)|CODE_UNIT_STARTED|[EXTERNAL]|execute_anonymous_apex
+12:16:40.2 (2740851)|VARIABLE_SCOPE_BEGIN|[5]|endPointValue|String|false|false
+12:16:40.2 (2824268)|VARIABLE_SCOPE_BEGIN|[2]|postH|System.Http|true|false
+12:16:40.2 (2832459)|VARIABLE_SCOPE_BEGIN|[12]|postRep|System.HttpResponse|true|false
+12:16:40.2 (2840692)|VARIABLE_SCOPE_BEGIN|[4]|postReq|System.HttpRequest|true|false
+12:16:40.2 (2936707)|HEAP_ALLOCATE|[72]|Bytes:3
+12:16:40.2 (2974819)|HEAP_ALLOCATE|[77]|Bytes:152
+12:16:40.2 (2987638)|HEAP_ALLOCATE|[342]|Bytes:408
+12:16:40.2 (3000992)|HEAP_ALLOCATE|[355]|Bytes:408
+12:16:40.2 (3014027)|HEAP_ALLOCATE|[467]|Bytes:48
+12:16:40.2 (3060263)|HEAP_ALLOCATE|[139]|Bytes:6
+12:16:40.2 (3076127)|HEAP_ALLOCATE|[EXTERNAL]|Bytes:18
+12:16:40.2 (3200207)|STATEMENT_EXECUTE|[1]
+12:16:40.2 (3202175)|STATEMENT_EXECUTE|[2]
+12:16:40.2 (3342285)|VARIABLE_ASSIGNMENT|[2]|postH|"System.Http[]"|0x6f542578
+12:16:40.2 (3349645)|STATEMENT_EXECUTE|[4]
+12:16:40.2 (3404129)|VARIABLE_ASSIGNMENT|[4]|postReq|"System.HttpRequest[Endpoint=null, Method=null]"|0x74c313c9
+12:16:40.2 (3410378)|STATEMENT_EXECUTE|[5]
+12:16:40.2 (3413171)|HEAP_ALLOCATE|[5]|Bytes:66
+12:16:40.2 (3423653)|VARIABLE_ASSIGNMENT|[5]|endPointValue|"https://creationbot- (46 more) ..."
+12:16:40.2 (3426836)|STATEMENT_EXECUTE|[6]
+12:16:40.2 (3517838)|STATEMENT_EXECUTE|[7]
+12:16:40.2 (3521285)|HEAP_ALLOCATE|[7]|Bytes:204
+12:16:40.2 (3541550)|STATEMENT_EXECUTE|[11]
+12:16:40.2 (3544012)|HEAP_ALLOCATE|[11]|Bytes:4
+12:16:40.2 (3556734)|STATEMENT_EXECUTE|[12]
+12:16:40.2 (3604242)|CALLOUT_REQUEST|[12]|System.HttpRequest[Endpoint=https://creationbot-dev-ed.my.salesforce.com/services/oauth2/token, Method=POST]
+12:16:40.2 (111985610)|HEAP_ALLOCATE|[EXTERNAL]|Bytes:1227
+12:16:40.2 (112055917)|CALLOUT_RESPONSE|[12]|System.HttpResponse[Status=OK, StatusCode=200]
+12:16:40.2 (112074149)|HEAP_ALLOCATE|[12]|Bytes:385
+12:16:40.2 (112177174)|VARIABLE_ASSIGNMENT|[12]|postRep|"System.HttpResponse[Status=OK, StatusCode=200]"|0x3f4b6c31
+12:16:40.2 (112185347)|STATEMENT_EXECUTE|[13]
+12:16:40.2 (112190910)|HEAP_ALLOCATE|[13]|Bytes:8
+12:16:40.2 (112259766)|HEAP_ALLOCATE|[13]|Bytes:379
+12:16:40.2 (112285427)|HEAP_ALLOCATE|[13]|Bytes:387
+12:16:40.2 (112325982)|HEAP_ALLOCATE|[50]|Bytes:5
+12:16:40.2 (112352535)|HEAP_ALLOCATE|[56]|Bytes:5
+12:16:40.2 (112359189)|HEAP_ALLOCATE|[64]|Bytes:7
+12:16:40.2 (112395309)|USER_DEBUG|[13]|DEBUG|Response{"access_token":"SESSION_ID_REMOVED","instance_url":"https://creationbot-dev-ed.my.salesforce.com","id":"https://login.salesforce.com/id/00D0N000000iaqiUAA/0050N000006oSnwQAE","token_type":"Bearer","issued_at":"1516709800459","signature":"aLUJHvDmRDji2scQHIo58F60A89QobmankDzgaY/HiQ="}
+12:16:40.113 (113999089)|CUMULATIVE_LIMIT_USAGE
+12:16:40.113 (113999089)|LIMIT_USAGE_FOR_NS|(default)|
+  Number of SOQL queries: 0 out of 100
+  Number of query rows: 0 out of 50000
+  Number of SOSL queries: 0 out of 20
+  Number of DML statements: 0 out of 150
+  Number of DML rows: 0 out of 10000
+  Maximum CPU time: 0 out of 10000
+  Maximum heap size: 0 out of 6000000
+  Number of callouts: 1 out of 100
+  Number of Email Invocations: 0 out of 10
+  Number of future calls: 0 out of 50
+  Number of queueable jobs added to the queue: 0 out of 50
+  Number of Mobile Apex push calls: 0 out of 10
+
+12:16:40.113 (113999089)|CUMULATIVE_LIMIT_USAGE_END
+
+12:16:40.2 (114052279)|CODE_UNIT_FINISHED|execute_anonymous_apex
+12:16:40.2 (114822725)|EXECUTION_FINISHED

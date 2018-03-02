@@ -1,5 +1,5 @@
 /**
-* @author       Ben Edwards (ben@benedwards.co.nz)
+* @author       
 * @description  Class to handle API calls for the Xero Accounting API resources
 **/
 public with sharing class XeroAccountingApi {
@@ -8,7 +8,7 @@ public with sharing class XeroAccountingApi {
     public enum SortOrder {ASCENDING, DESCENDING}
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL contacts for your Xero environment
     *   @return List of Xero Contact wrapper classes
     **/
@@ -50,7 +50,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL contacts for your Xero environment
     *   @return List of Xero Contact wrapper classes
     **/
@@ -79,7 +79,7 @@ public with sharing class XeroAccountingApi {
     */
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to create a Contact in Xero. 
     *   @return Returns the Contact Id of the Contact created in Xero
     **/
@@ -110,7 +110,7 @@ public with sharing class XeroAccountingApi {
     */
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL invoices for your Xero environment
     *   @return List of Xero Invoice wrapper classes
     **/
@@ -120,7 +120,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL invoices for your Xero environment
     *   @return List of Xero Invoice wrapper classes
     **/
@@ -174,7 +174,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return a single invoice for your Xero environment for a given Xero Invoice
     *   @return Single Xero Invoice
     **/
@@ -260,7 +260,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return all invoices for a given Contact Id
     *   @return List of Xero Invoice wrapper classes
     **/
@@ -289,7 +289,7 @@ public with sharing class XeroAccountingApi {
     */
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to create an invoice in Xero. 
     *   @return Returns the invoice Id of the invoice created in Xero
     **/
@@ -318,7 +318,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL contacts for your Xero environment
     *   @return List of Xero Contact wrapper classes
     **/
@@ -352,7 +352,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL contacts for your Xero environment
     *   @return List of Xero Contact wrapper classes
     **/
@@ -396,7 +396,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL contacts for your Xero environment
     *   @return List of Xero Contact wrapper classes
     **/
@@ -440,7 +440,7 @@ public with sharing class XeroAccountingApi {
     }
 
      /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Method to return ALL invoices for your Xero environment
     *   @return List of Xero Invoice wrapper classes
     **/
@@ -480,7 +480,7 @@ public with sharing class XeroAccountingApi {
     }
 
     /**
-    *   @author Ben Edwards (ben@benedwards.co.nz)
+    *   @author 
     *   @description Custom exception class to throw errors for web service callouts
     **/
     public class XeroAccountingApiException extends Exception {}
